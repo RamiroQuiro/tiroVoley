@@ -133,6 +133,91 @@ async function seed() {
 
   await db.insert(jugadores).values(players);
 
+  // Seed products
+  console.log('Seeding products...');
+  const productsData = [
+    // Indumentaria
+    {
+      nombre: 'Remera Oficial 2024',
+      descripcion: 'La camiseta del equipo. Tela dry-fit de alta calidad.',
+      precio: 15000,
+      imagen: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=400&auto=format&fit=crop',
+      categoria: 'remera',
+      stock: 50,
+      destacado: true
+    },
+    {
+      nombre: 'Buzo con Capucha',
+      descripcion: 'Ideal para el entrenamiento en invierno.',
+      precio: 25000,
+      imagen: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=400&auto=format&fit=crop',
+      categoria: 'buzo',
+      stock: 30,
+      destacado: true
+    },
+    {
+      nombre: 'Gorra Tiro y Volley',
+      descripcion: 'Gorra bordada con escudo.',
+      precio: 8000,
+      imagen: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=400&auto=format&fit=crop',
+      categoria: 'gorra',
+      stock: 100,
+      destacado: false
+    },
+    // Vales de Comida
+    {
+      nombre: 'Docena de Empanadas',
+      descripcion: 'Empanadas de carne cortada a cuchillo. Fritas o al horno.',
+      precio: 6000,
+      imagen: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=400&auto=format&fit=crop',
+      categoria: 'vale',
+      stock: 200,
+      destacado: true,
+      comercio: 'Rotisería "El Buen Gusto"',
+      tipo: 'empanadas',
+      vigencia: '2025-12-31',
+      direccion: 'Av. San Martín 1234'
+    },
+    {
+      nombre: 'Pollo con Papas',
+      descripcion: 'Pollo al spiedo con porción abundante de fritas.',
+      precio: 8500,
+      imagen: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=400&auto=format&fit=crop',
+      categoria: 'vale',
+      stock: 50,
+      destacado: false,
+      comercio: 'Parrilla "Don Pedro"',
+      tipo: 'asado',
+      vigencia: '2025-11-30',
+      direccion: 'Belgrano 456'
+    },
+    // Productos Locales
+    {
+      nombre: 'Miel de Campo (1kg)',
+      descripcion: 'Miel pura de productores locales.',
+      precio: 4500,
+      imagen: 'https://images.unsplash.com/photo-1587049352851-8d4e8918dcf1?q=80&w=400&auto=format&fit=crop',
+      categoria: 'alimento',
+      stock: 20,
+      destacado: false,
+      artesano: 'Familia Gómez',
+      procedencia: 'Fernández'
+    },
+      {
+      nombre: 'Alfajores Santiagueños (x6)',
+      descripcion: 'Caja de 6 alfajores de maicena artesanales.',
+      precio: 3500,
+      imagen: 'https://images.unsplash.com/photo-1698248439537-12297129757c?q=80&w=400&auto=format&fit=crop',
+      categoria: 'alimento',
+      stock: 50,
+      destacado: true,
+      artesano: 'Dulces del Estero',
+      procedencia: 'La Banda'
+    }
+  ];
+
+  await db.insert(productos).values(productsData);
+
   console.log('Seed completed!');
 }
 

@@ -1,125 +1,146 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { ProductCard } from "../../components/shop/ProductCard";
+import { ProductGrid } from "../../components/shop/ProductGrid";
+import { CartSidebar } from "../../components/shop/CartSidebar";
 import { db } from "../../db";
-import { productos, rifas } from "../../db/schema";
-import { Card } from "../../components/common/Card";
-import { Button } from "../../components/common/Button";
-import { addToCart } from "../../store/cart";
+import { productos } from "../../db/schema";
 
-// Fetch products and raffles
-const productsList = await db.select().from(productos);
-const rafflesList = await db.select().from(rifas);
+// Obtener TODOS los productos
+const allProducts = await db.select().from(productos);
 
-// Separate products by category if needed, or just list all
-const clothing = productsList.filter((p) => p.categoria !== "accesorio");
-const accessories = productsList.filter((p) => p.categoria === "accesorio");
+// Separar destacados para un showcase inicial (opcional)
+const destacados = allProducts
+  .filter((p) => p.destacado || p.stock < 5)
+  .slice(0, 4);
 ---
 
-<Layout title="Tienda - La Banda a Jujuy">
-    <div class="bg-brand-orange py-12 mb-8">
-        <div class="container mx-auto px-4 text-center text-white">
-            <h1 class="text-4xl font-bold mb-4">Tienda Solidaria</h1>
-            <p class="text-xl max-w-2xl mx-auto opacity-90">
-                Llevate un recuerdo y colaborá con el equipo. Todo lo recaudado
-                va directamente al fondo del viaje.
-            </p>
+<Layout title="Tienda Solidaria - La Banda a Jujuy">
+  <!-- Hero de la tienda -->
+  <div
+    class="relative bg-gradient-to-r from-brand-blue to-blue-800 overflow-hidden text-white shadow-xl"
+  >
+    <!-- Abstract Shapes Background -->
+    <div class="absolute inset-0 opacity-10">
+      <svg
+        class="h-full w-full"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+      </svg>
+    </div>
+
+    <div
+      class="container mx-auto px-4 py-16 md:py-24 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8"
+    >
+      <div class="max-w-2xl">
+        <div
+          class="inline-block px-3 py-1 bg-brand-orange text-white text-xs font-bold rounded-full mb-4 uppercase tracking-wider"
+        >
+          100% A beneficio
         </div>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+          Tienda <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-brand-dark"
+            >Solidaria</span
+          >
+        </h1>
+        <p
+          class="text-lg md:text-xl text-blue-100 mb-8 leading-relaxed max-w-lg"
+        >
+          Comprá productos oficiales, vales de comida y artesanías locales.
+          <strong class="text-white"
+            >Todo lo recaudado nos acerca a Jujuy.</strong
+          >
+        </p>
+
+        <!-- Stats mini -->
+        <div class="flex flex-wrap gap-4 text-sm font-medium">
+          <div
+            class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+          >
+            <span>🎁</span>
+            <span>{allProducts.length} productos</span>
+          </div>
+          <div
+            class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+          >
+            <span>🛡️</span>
+            <span>Compra Segura</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional: Hero Image or Icon -->
+      <div class="hidden md:block opacity-80 mix-blend-overlay">
+        <span class="text-9xl">🛍️</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <main class="container mx-auto px-4 py-12 -mt-8 relative z-20">
+    <!-- Product Grid con todo integrado (Filtros, Búsqueda, Grid) -->
+    <!-- Pasamos 'destacados' si quisieramos mostrarlos diferente, pero el Grid ya maneja todo -->
+    <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 min-h-[500px]">
+      <ProductGrid client:load products={allProducts} />
     </div>
 
-    <div class="container mx-auto px-4 pb-20 space-y-16">
-        {/* Rifas Section */}
-        <section id="rifas" class="scroll-mt-24">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="h-1 bg-gray-200 flex-grow rounded-full"></div>
-                <h2 class="text-3xl font-bold text-center text-brand-dark">
-                    Rifas Activas
-                </h2>
-                <div class="h-1 bg-gray-200 flex-grow rounded-full"></div>
-            </div>
-
-            {
-                rafflesList.length > 0 ? (
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {rafflesList.map((raffle) => (
-                            <Card
-                                className="flex flex-col md:flex-row overflow-hidden border-2 border-brand-orange/20"
-                                hoverEffect
-                            >
-                                <div class="bg-brand-orange/10 p-8 flex items-center justify-center md:w-1/3">
-                                    <div class="text-6xl">🎟️</div>
-                                </div>
-                                <div class="p-6 flex-1 flex flex-col">
-                                    <h3 class="text-2xl font-bold mb-2">
-                                        {raffle.premio}
-                                    </h3>
-                                    <div class="mb-4 space-y-1 text-gray-600">
-                                        <p>
-                                            📅 Sortea:{" "}
-                                            {raffle.fechaSorteo ||
-                                                "A confirmar"}
-                                        </p>
-                                        <p className="text-brand-orange font-bold text-lg">
-                                            {" "}
-                                            Valor: ${raffle.precioNumero}
-                                        </p>
-                                    </div>
-                                    <div class="mt-auto">
-                                        <Button
-                                            fullWidth
-                                            className="shadow-md"
-                                            client:load
-                                            onClick={() =>
-                                                addToCart({
-                                                    id: 1000 + raffle.id, // Offset ID to avoid collision with products
-                                                    name: `Rifa: ${raffle.premio}`,
-                                                    price: raffle.precioNumero,
-                                                    category: "rifa",
-                                                })
-                                            }
-                                        >
-                                            Comprar Número
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                ) : (
-                    <div class="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                        <p class="text-gray-500 text-lg">
-                            No hay rifas activas en este momento.
-                        </p>
-                    </div>
-                )
-            }
-        </section>
-
-        {/* Products Section */}
-        <section>
-            <div class="flex items-center gap-4 mb-8">
-                <div class="h-1 bg-gray-200 flex-grow rounded-full"></div>
-                <h2 class="text-3xl font-bold text-center text-brand-dark">
-                    Productos
-                </h2>
-                <div class="h-1 bg-gray-200 flex-grow rounded-full"></div>
-            </div>
-
-            {
-                productsList.length > 0 ? (
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {productsList.map((product) => (
-                            <ProductCard client:load product={product} />
-                        ))}
-                    </div>
-                ) : (
-                    <div class="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                        <p class="text-gray-500 text-lg">
-                            Próximamente estaremos cargando productos.
-                        </p>
-                    </div>
-                )
-            }
-        </section>
+    <!-- Info importante / Footer de la tienda -->
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 opacity-80">
+      <div
+        class="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors"
+      >
+        <div class="text-3xl bg-blue-50 p-3 rounded-lg">🚚</div>
+        <div>
+          <h4 class="font-bold text-gray-900">Envíos y Retiros</h4>
+          <p class="text-sm text-gray-600 mt-1">
+            Coordinamos la entrega en La Banda o retirás en el club.
+          </p>
+        </div>
+      </div>
+      <div
+        class="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors"
+      >
+        <div class="text-3xl bg-green-50 p-3 rounded-lg">💳</div>
+        <div>
+          <h4 class="font-bold text-gray-900">Medios de Pago</h4>
+          <p class="text-sm text-gray-600 mt-1">
+            Aceptamos todas las tarjetas con MercadoPago y efectivo.
+          </p>
+        </div>
+      </div>
+      <div
+        class="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors"
+      >
+        <div class="text-3xl bg-orange-50 p-3 rounded-lg">🤝</div>
+        <div>
+          <h4 class="font-bold text-gray-900">Impacto Real</h4>
+          <p class="text-sm text-gray-600 mt-1">
+            Cada peso va a una cuenta transparente para el viaje.
+          </p>
+        </div>
+      </div>
     </div>
+  </main>
+
+  <!-- Carrito Sidebar -->
+  <CartSidebar client:load />
+
+  <!-- Floating CTA Rifas -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <a
+      href="/rifas"
+      class="group flex items-center gap-3 pl-4 pr-6 py-3 bg-gray-900 text-white font-bold rounded-full shadow-2xl hover:shadow-gray-900/50 hover:-translate-y-1 transition-all duration-300"
+    >
+      <span class="text-2xl group-hover:rotate-12 transition-transform">🎟️</span
+      >
+      <div class="flex flex-col items-start leading-none">
+        <span class="text-[10px] text-gray-400 uppercase tracking-wider"
+          >Participá</span
+        >
+        <span>Ver Rifas</span>
+      </div>
+    </a>
+  </div>
 </Layout>
