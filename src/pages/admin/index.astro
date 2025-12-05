@@ -1,0 +1,127 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { db } from "../../db";
+import { config, donaciones, jugadores } from "../../db/schema";
+import { sql } from "drizzle-orm";
+
+// Auth check
+if (!Astro.cookies.has("auth_token")) {
+  return Astro.redirect("/admin/login");
+}
+
+// Stats
+const configData = (await db.select().from(config).limit(1))[0];
+const totalRaised = configData?.recaudadoTotal || 0;
+const goal = configData?.metaTotal || 1;
+
+const playersCount = (
+  await db.select({ count: sql<number>`count(*)` }).from(jugadores)
+)[0].count;
+const donationsCount = (
+  await db.select({ count: sql<number>`count(*)` }).from(donaciones)
+)[0].count;
+
+// Recent donations
+const recentDonations = await db
+  .select()
+  .from(donaciones)
+  .orderBy(sql`id DESC`)
+  .limit(5);
+---
+
+<AdminLayout title="Dashboard">
+  <h2 class="text-3xl font-bold mb-8 text-gray-800">Resumen General</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3
+        class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-2"
+      >
+        Recaudado Total
+      </h3>
+      <p class="text-3xl font-bold text-brand-blue">
+        ${totalRaised.toLocaleString()}
+      </p>
+      <div class="w-full bg-gray-100 h-2 rounded-full mt-4">
+        <div
+          class="bg-brand-blue h-2 rounded-full"
+          style={`width: ${Math.min((totalRaised / goal) * 100, 100)}%`}
+        >
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">Meta: ${goal.toLocaleString()}</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3
+        class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-2"
+      >
+        Jugadores Activos
+      </h3>
+      <p class="text-3xl font-bold text-gray-800">{playersCount}</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3
+        class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-2"
+      >
+        Donaciones
+      </h3>
+      <p class="text-3xl font-bold text-brand-orange">donacionesCount</p>
+    </div>
+  </div>
+
+  <div
+    class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+  >
+    <div class="p-6 border-b border-gray-50">
+      <h3 class="font-bold text-lg">Últimas Donaciones</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+          <tr>
+            <th class="px-6 py-3">Fecha</th>
+            <th class="px-6 py-3">Donante</th>
+            <th class="px-6 py-3">Monto</th>
+            <th class="px-6 py-3">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {
+            recentDonations.length > 0 ? (
+              recentDonations.map((d) => (
+                <tr>
+                  <td class="px-6 py-4">
+                    {new Date(d.fecha).toLocaleDateString()}
+                  </td>
+                  <td class="px-6 py-4 font-medium">{d.donante}</td>
+                  <td class="px-6 py-4 text-brand-dark">
+                    $ {d.monto.toLocaleString()}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span
+                      class={`px-2 py-1 rounded-full text-xs font-bold ${
+                        d.estado === "approved"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {d.estado}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                  Sin donaciones recientes
+                </td>
+              </tr>
+            )
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>

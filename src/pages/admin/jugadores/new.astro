@@ -1,0 +1,17 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import PlayerForm from "../../../components/admin/PlayerForm";
+
+// Auth check
+if (!Astro.cookies.has("auth_token")) {
+    return Astro.redirect("/admin/login");
+}
+---
+
+<AdminLayout title="Nuevo Jugador">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Agregar Jugador</h1>
+    </div>
+
+    <PlayerForm client:load />
+</AdminLayout>

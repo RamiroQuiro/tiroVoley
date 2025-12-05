@@ -1,0 +1,26 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PlayersGrid from "../../components/apadrinar/PlayersGrid";
+import { db } from "../../db";
+import { jugadores } from "../../db/schema";
+import { desc } from "drizzle-orm";
+
+const players = await db
+  .select()
+  .from(jugadores)
+  .orderBy(desc(jugadores.recaudado));
+---
+
+<Layout title="Apadrina un Jugador - La Banda a Jujuy">
+  <div class="container mx-auto px-4 text-center py-20">
+    <h1 class="text-4xl font-bold mb-4">Apadrina un Jugador</h1>
+    <p class="text-xl max-w-2xl mx-auto opacity-90">
+      Conocé a nuestros jugadores y ayudalos a cumplir su meta individual. Cada
+      aporte suma para el sueño de todo el equipo.
+    </p>
+  </div>
+
+  <div class="container mx-auto px-4 pb-20">
+    <PlayersGrid client:load initialPlayers={players} />
+  </div>
+</Layout>

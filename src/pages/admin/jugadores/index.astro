@@ -1,0 +1,91 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { db } from "../../../db";
+import { jugadores } from "../../../db/schema";
+import { desc } from "drizzle-orm";
+
+// Auth check
+if (!Astro.cookies.has("auth_token")) {
+  return Astro.redirect("/admin/login");
+}
+
+const players = await db
+  .select()
+  .from(jugadores)
+  .orderBy(desc(jugadores.recaudado));
+---
+
+<AdminLayout title="Jugadores">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Jugadores</h1>
+    <a
+      href="/admin/jugadores/new"
+      class="bg-brand-dark text-white px-4 py-2 rounded hover:bg-black transition-colors"
+    >
+      + Nuevo Jugador
+    </a>
+  </div>
+
+  <div
+    class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden"
+  >
+    <table class="w-full text-left">
+      <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+        <tr>
+          <th class="px-6 py-3">Foto</th>
+          <th class="px-6 py-3">Nombre</th>
+          <th class="px-6 py-3">Posición</th>
+          <th class="px-6 py-3">Recaudado</th>
+          <th class="px-6 py-3">Meta</th>
+          <th class="px-6 py-3">Destacado</th>
+          <th class="px-6 py-3">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {
+          players.map((player) => (
+            <tr>
+              <td class="px-6 py-4">
+                <img
+                  src={player.fotoURL || "https://via.placeholder.com/40"}
+                  class="w-10 h-10 rounded-full object-cover bg-gray-100"
+                />
+              </td>
+              <td class="px-6 py-4 font-medium">{player.nombre}</td>
+              <td class="px-6 py-4">{player.posicion}</td>
+              <td class="px-6 py-4 text-green-600 font-medium">
+                $ {player.recaudado?.toLocaleString() ?? 0}
+              </td>
+              <td class="px-6 py-4 text-gray-500">
+                $ {player.metaPersonal?.toLocaleString() ?? 0}
+              </td>
+              <td class="px-6 py-4">
+                {player.destacado ? (
+                  <span class="bg-brand-orange/10 text-brand-orange px-2 py-1 rounded text-xs font-bold">
+                    ★ SI
+                  </span>
+                ) : (
+                  <span class="text-gray-300">-</span>
+                )}
+              </td>
+              <td class="px-6 py-4 flex gap-2">
+                <a
+                  href={`/admin/jugadores/edit/${player.id}`}
+                  class="text-blue-600 hover:underline"
+                >
+                  Editar
+                </a>
+                <button
+                  class="text-red-500 hover:underline"
+                  onclick={`if(confirm('¿Seguro?')) fetch('/api/players/${player.id}', { method: 'DELETE' }).then(() => location.reload())`}
+                >
+                  Borrar
+                </button>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

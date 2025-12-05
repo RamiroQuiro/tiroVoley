@@ -1,0 +1,22 @@
+---
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import PlayerForm from '../../../../components/admin/PlayerForm';
+import { db } from '../../../../db';
+import { jugadores } from '../../../../db/schema';
+import { eq } from 'drizzle-orm';
+
+const { id } = Astro.params;
+const player = (await db.select().from(jugadores).where(eq(jugadores.id, Number(id))).limit(1))[0];
+
+if (!player) {
+  return Astro.redirect('/admin/jugadores');
+}
+---
+
+<AdminLayout title={\`Editar: \${player.nombre}\`}>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Editar Jugador</h1>
+  </div>
+  
+  <PlayerForm client:load initialData={player} isEditing={true} />
+</AdminLayout>

@@ -1,0 +1,51 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { EventCard } from "../../components/events/EventCard";
+import { db } from "../../db";
+import { eventos } from "../../db/schema";
+import { desc, gte } from "drizzle-orm";
+
+const today = new Date().toISOString();
+// Fetch upcoming events
+const upcomingEvents = await db
+    .select()
+    .from(eventos)
+    .where(gte(eventos.fecha, today))
+    .orderBy(eventos.fecha);
+// Ideally we also fetch past events or filter them in JS if needed
+---
+
+<Layout title="Eventos - La Banda a Jujuy">
+    <div class="bg-purple-700 py-12 mb-8">
+        <div class="container mx-auto px-4 text-center text-white">
+            <h1 class="text-4xl font-bold mb-4">Próximos Eventos</h1>
+            <p class="text-xl max-w-2xl mx-auto opacity-90">
+                Sumate a nuestras actividades, torneos y cenas. Pasala bien
+                mientras ayudás al equipo.
+            </p>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 pb-20">
+        <div class="max-w-4xl mx-auto space-y-6">
+            {
+                upcomingEvents.length > 0 ? (
+                    upcomingEvents.map((event) => (
+                        <EventCard client:load event={event} />
+                    ))
+                ) : (
+                    <div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+                        <span class="text-6xl mb-4 block">📅</span>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">
+                            No hay eventos próximos
+                        </h3>
+                        <p class="text-gray-500">
+                            Estamos planificando nuevas actividades. ¡Volvé
+                            pronto!
+                        </p>
+                    </div>
+                )
+            }
+        </div>
+    </div>
+</Layout>

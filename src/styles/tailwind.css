@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blue: #0E85E0;
+  --color-brand-orange: #E1540F;
+  --color-brand-dark: #1a1a1a;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-brand-dark antialiased bg-gray-50;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

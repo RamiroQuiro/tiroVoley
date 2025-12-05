@@ -1,11 +1,31 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/home/Hero";
+import ActionCards from "../components/home/ActionCards";
+import { db } from "../db";
+import { config } from "../db/schema";
+import Galleria from "../components/home/Galeria";
+import SponsorsHome from "../components/home/SponsorsHome";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Fetch initial data
+const configData = await db.select().from(config).limit(1);
+const { metaTotal, recaudadoTotal } = configData[0] || {
+  metaTotal: 1000000,
+  recaudadoTotal: 0,
+};
+const safeMetaTotal = metaTotal ?? 1000000;
+const safeRecaudadoTotal = recaudadoTotal ?? 0;
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="La Banda a Jujuy - Plataforma Solidaria">
+  <Hero client:load totalRaised={safeRecaudadoTotal} goal={safeMetaTotal} />
+  <ActionCards client:visible />
+
+  <SponsorsHome client:visible />
+
+  <!-- Gallery Section Placeholder (To be implemented) -->
+  <section class="py-16 md:py-24 px-48 mx-auto">
+    <h3 class="text-lg font-semibold text-[#1e40af] mb-3">Galería</h3>
+    <Galleria />
+  </section>
 </Layout>

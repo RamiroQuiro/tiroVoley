@@ -1,0 +1,87 @@
+---
+import "../styles/tailwind.css";
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+
+// Simple auth check simulation (Real implementation would verify cookie/session)
+// In a real app we'd use middleware, but for this simple scoped task we'll check client-side or assume protected routes
+// For this layout we just provide the structure.
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <title>Admin - {title}</title>
+    </head>
+    <body class="bg-gray-100 min-h-screen flex text-sm">
+        {/* Sidebar */}
+        <aside
+            class="w-64 bg-brand-dark text-white flex-shrink-0 flex flex-col h-screen sticky top-0"
+        >
+            <div class="p-6 border-b border-gray-800">
+                <h1 class="font-bold text-xl tracking-tight">Panel Admin</h1>
+            </div>
+
+            <nav class="flex-1 p-4 space-y-2">
+                <a
+                    href="/admin"
+                    class="block px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                    📊 Dashboard
+                </a>
+                <a
+                    href="/admin/jugadores"
+                    class="block px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                    🏐 Jugadores
+                </a>
+                <a
+                    href="/admin/donaciones"
+                    class="block px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                    💸 Donaciones
+                </a>
+                <a
+                    href="/admin/productos"
+                    class="block px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                    🛍️ Productos
+                </a>
+                <a
+                    href="/admin/eventos"
+                    class="block px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                    📅 Eventos
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-gray-800">
+                <a
+                    href="/api/auth/logout"
+                    class="block px-4 py-2 text-red-400 hover:text-red-300"
+                >
+                    Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        {/* Main Content */}
+        <main class="flex-1 p-8 overflow-y-auto">
+            <div class="max-w-7xl mx-auto">
+                <slot />
+            </div>
+        </main>
+    </body>
+</html>
