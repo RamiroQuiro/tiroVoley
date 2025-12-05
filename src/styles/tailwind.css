@@ -18,6 +18,47 @@
   }
 }
 
+ @keyframes marquee-slow {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% / 3));
+          }
+        }
+        
+        @keyframes marquee-reverse-slower {
+          0% {
+            transform: translateX(calc(-100% / 3));
+          }
+          100% {
+            transform: translateX(0);
+          }
+        }
+        
+        .animate-marquee-slow {
+          animation: marquee-slow 80s linear infinite;
+        }
+        
+        .animate-marquee-reverse-slower {
+          animation: marquee-reverse-slower 100s linear infinite;
+        }
+        
+        /* Pause animation on hover */
+        .animate-marquee-slow:hover,
+        .animate-marquee-reverse-slower:hover {
+          animation-play-state: paused;
+        }
+        
+        /* Responsive speeds */
+        @media (max-width: 768px) {
+          .animate-marquee-slow {
+            animation-duration: 60s;
+          }
+          .animate-marquee-reverse-slower {
+            animation-duration: 80s;
+          }
+        }
 @keyframes fade-in {
   from {
     opacity: 0;
