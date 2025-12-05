@@ -77,7 +77,11 @@ export function RaffleSection() {
               className="w-24 text-center"
               aria-label="Cantidad de números"
             />
-            <Button variant="primary" onClick={handleBuyRaffle}>
+            <Button
+              variant="primary"
+              className="w-full  wra"
+              onClick={handleBuyRaffle}
+            >
               Comprar Rifa(s)
             </Button>
           </div>
