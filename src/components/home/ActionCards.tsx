@@ -34,7 +34,7 @@ const actions = [
 
 export default function ActionCards() {
   return (
-    <section className="py-16 md:py-24  px-48 mx-auto">
+    <section className="py-16 md:py-24 px-4 md:px-12 lg:px-48 mx-auto">
       <div className="text-center mb-6">
         <p className="text-gray-600 text-lg font-bold max-w-2xl mx-auto">
           Tu apoyo es fundamental. Elegí la forma que más te guste para ser
