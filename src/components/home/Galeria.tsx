@@ -17,9 +17,14 @@ export default function Galleria() {
   ];
 
   return (
-    <Card className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-6">
+    <Card className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-4 md:p-6">
       {imgs.map((src, i) => (
-        <img key={i} src={src} alt={`galeria-${i}`} className="w-full h-96 object-cover rounded" />
+        <img
+          key={i}
+          src={src}
+          alt={`galeria-${i}`}
+          className="w-full h-48 md:h-64 lg:h-96 object-cover rounded"
+        />
       ))}
     </Card>
   );
